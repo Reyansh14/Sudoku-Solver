@@ -116,7 +116,7 @@ def solve_board(board):
 print("Welcome to my Sudoku Solver. The program will solve the sudoku board by using a backtracking algorithm.")
 selection = input("Enter '1' to pick board 1 or '2' to pick board 2: ")
 
-if selection == 1:
+if selection == str(1):
     print("ORIGINAL BOARD 1:")
     print(make_board(board1))
     solve_board(board1)
