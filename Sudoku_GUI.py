@@ -27,34 +27,34 @@ class Grid:
         [0, 4, 9, 2, 0, 6, 0, 0, 7]
     ]
 
-    def __init__(self, rows, cols, width, height):
+    def __init__(self, rows, columns, width, height):
         self.rows = rows
-        self.cols = cols
+        self.columns = columns
         self.cubes = [[Cube(self.board[i][j], i, j, width, height)
-                       for j in range(cols)] for i in range(rows)]
+                       for j in range(columns)] for i in range(rows)]
         self.width = width
         self.height = height
         self.model = None
         self.selected = None
 
-    # update_model updates the board with the latest changes each time it is called.
-    def update_model(self):
+    # update_board updates the board with the latest changes each time it is called.
+    def update_board(self):
         self.model = [[self.cubes[i][j].value for j in range(
-            self.cols)] for i in range(self.rows)]
+            self.columns)] for i in range(self.rows)]
 
-    # place simply places the permanent value into the selected cube if it is valid. Otherwise, the value is not placed permanently (in dark font).
-    def place(self, val):
+    # finalize simply places the permanent value into the selected cube if it is valid. Otherwise, the value is not placed permanently (in dark font).
+    def finalize(self, val):
         row, col = self.selected
         if self.cubes[row][col].value == 0:
             self.cubes[row][col].set(val)
-            self.update_model()
+            self.update_board()
 
             if is_valid(self.model, val, (row, col)) and solve_board(self.model):
                 return True
             else:
                 self.cubes[row][col].set(0)
                 self.cubes[row][col].set_temp(0)
-                self.update_model()
+                self.update_board()
                 return False
 
     # sketch just draws the temporary value in grey before the user presses enter.
@@ -77,14 +77,14 @@ class Grid:
 
         # Drawing cubes
         for i in range(self.rows):
-            for j in range(self.cols):
+            for j in range(self.columns):
                 self.cubes[i][j].draw(win)
 
     # select selects the square that was clicked on.
     def select(self, row, col):
         # resets all other selected values
         for i in range(self.rows):
-            for j in range(self.cols):
+            for j in range(self.columns):
                 self.cubes[i][j].selected = False
 
         self.cubes[row][col].selected = True
@@ -109,7 +109,7 @@ class Grid:
     # is_finished checks there are no more empty squares on the board
     def is_finished(self):
         for i in range(self.rows):
-            for j in range(self.cols):
+            for j in range(self.columns):
                 if self.cubes[i][j].value == 0:
                     return False
         return True
@@ -224,7 +224,7 @@ def main():
                 if event.key == pygame.K_RETURN:
                     i, j = board.selected
                     if board.cubes[i][j].temp != 0:
-                        if board.place(board.cubes[i][j].temp):
+                        if board.finalize(board.cubes[i][j].temp):
                             print("Success")
                         else:
                             print("Wrong")
